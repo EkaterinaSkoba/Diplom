@@ -98,7 +98,7 @@ const EventDetails = () => {
   const getTabs = () => {
     const tabs = [
       { id: 'purchases', label: 'Закупки' },
-      { id: 'contributions', label: 'Мои взносы' },
+      { id: 'contributions', label: 'Взносы' },
       { id: 'tasks', label: 'Задачи' },
       { id: 'participants', label: 'Участники' },
     ];

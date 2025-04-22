@@ -69,7 +69,17 @@ const ParticipantsTab = ({event}: ParticipantItemProps) => {
 
   return (
       <div>
+        <h3>Пригласить участников</h3>
+        <p>Поделитесь ссылкой, чтобы пригласить новых участников в мероприятие.</p>
+        <div style={{marginBottom: "10px"}}>
+          <input className="invite-link-input" type="text" value={inviteLink} readOnly
+                 style={{width: '80%', marginRight: 10}}/>
+          <Button variant="contained" onClick={copyInviteLink} >Копировать</Button>
+        </div>
+
         <h2>Участники</h2>
+        <p>👑 — Назначить организатором</p>
+        <p>❌ — Удалить из мероприятия</p>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -86,23 +96,34 @@ const ParticipantsTab = ({event}: ParticipantItemProps) => {
                     <TableCell>{participant.tgUserId === event.organizerTgUserId ? 'Организатор' : 'Участник'}</TableCell>
                     {isCurrentUserOrganizer() && participant.tgUserId !== user.id && (
                         <TableCell>
-                          {participant.tgUserId !== event.organizerTgUserId && (
+                          <div className='buttons-action-participants'>
                               <Button
-                                  variant="contained"
-                                  color="warning"
+                                  variant="outlined"
                                   onClick={() => handleAssignOrganizer(participant.tgUserId)}
+                                  sx={{
+                                    border: '2px solid #FFA500',
+                                    '&:hover': {
+                                      borderColor: '#FF8C00', // Темнее при наведении
+                                      backgroundColor: 'rgba(255, 165, 0, 0.08)', // Легкий оранжевый при наведении
+                                    },
+                                  }}
                               >
-                                Назначить организатором
+                                👑
                               </Button>
-                          )}
-                          <Button
-                              variant="contained"
-                              color="error"
-                              onClick={() => handleRemoveParticipant(participant.id)}
-                              style={{marginLeft: 10}}
-                          >
-                            Удалить
-                          </Button>
+                              <Button
+                                  variant="outlined"
+                                  onClick={() => handleRemoveParticipant(participant.id)}
+                                  sx={{
+                                    border: '2px solid #ff1e00',
+                                    '&:hover': {
+                                      borderColor: '#ce1800', // Темнее при наведении
+                                      backgroundColor: 'rgba(255, 30, 0, 0.08)', // Легкий оранжевый при наведении
+                                    },
+                                  }}
+                              >
+                                ❌
+                              </Button>
+                          </div>
                         </TableCell>
                     )}
                   </TableRow>
@@ -110,14 +131,6 @@ const ParticipantsTab = ({event}: ParticipantItemProps) => {
             </TableBody>
           </Table>
         </TableContainer>
-
-        <h3>Пригласить участников</h3>
-        <p>Поделитесь ссылкой, чтобы пригласить новых участников в мероприятие.</p>
-        <div>
-          <input className="invite-link-input" type="text" value={inviteLink} readOnly
-                 style={{width: '80%', marginRight: 10}}/>
-          <Button variant="contained" onClick={copyInviteLink}>Копировать</Button>
-        </div>
       </div>
   );
 };

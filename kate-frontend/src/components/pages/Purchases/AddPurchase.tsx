@@ -74,8 +74,65 @@ const AddPurchase = () => {
     loadData();
   }, [eventId]);
 
+  // Форматирование цены для отображения
+  const formatPrice = (price: number | null | undefined): string => {
+    if (price === null || price === undefined) return '';
+    if (price === 0) return '0';
+    return price.toFixed(2).replace(/\.00$/, ''); // Убираем .00 если нет копеек
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Специальная обработка для поля price
+    if (name === 'price') {
+      // Если поле было пустым или 0, и пользователь вводит цифру
+      if ((formData.price === null || formData.price === 0) && /^[1-9]$/.test(value)) {
+        // Просто устанавливаем новое значение
+        const numValue = parseFloat(value);
+        
+        // Если это обычная закупка (не сбор средств), автоматически меняем статус
+        if (formData.fundraisingStatus === FundraisingStatus.NONE) {
+          setFormData(prevData => ({
+            ...prevData,
+            price: numValue,
+            completionStatus: CompletionStatus.DONE
+          }));
+        } else {
+          setFormData(prevData => ({
+            ...prevData,
+            price: numValue
+          }));
+        }
+        return;
+      }
+      
+      // Проверяем, что введено допустимое число
+      const regex = /^$|^0$|^[1-9][0-9]*[.,]?[0-9]{0,2}$/;
+      if (!regex.test(value)) {
+        return; // Игнорируем недопустимый ввод
+      }
+      
+      // Преобразуем значение в число или null, если строка пуста
+      let numValue = value === '' ? null : parseFloat(value.replace(',', '.'));
+      
+      // Устанавливаем новое значение и, если это обычная закупка, меняем статус
+      if (numValue !== null && numValue > 0 && formData.fundraisingStatus === FundraisingStatus.NONE) {
+        setFormData(prevData => ({
+          ...prevData,
+          price: numValue,
+          completionStatus: CompletionStatus.DONE
+        }));
+      } else {
+        setFormData(prevData => ({
+          ...prevData,
+          price: numValue
+        }));
+      }
+      return;
+    }
+    
+    // Обработка других полей формы
     setFormData(prevData => ({
       ...prevData,
       [name]: value
@@ -128,6 +185,7 @@ const AddPurchase = () => {
       <Header 
         title={isEditing ? "Редактирование закупки" : "Добавление закупки"} 
         showBackButton={true} 
+        customBackPath={`/event/${eventId}`} 
       />
       <form className="purchase-form" onSubmit={handleSubmit}>
         <div className="form-group">
@@ -146,13 +204,12 @@ const AddPurchase = () => {
         <div className="form-group">
           <label htmlFor="price">Стоимость (руб.)</label>
           <input
-            type="number"
+            type="text"
             id="price"
             name="price"
-            value={formData?.price}
+            value={formatPrice(formData?.price)}
             onChange={handleChange}
             placeholder="Стоимость"
-            min="0"
           />
         </div>
 

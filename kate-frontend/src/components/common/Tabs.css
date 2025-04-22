@@ -10,7 +10,7 @@
   display: flex;
   flex-wrap: wrap;
   overflow-x: auto;
-  padding: 0 1rem;
+  padding: 0 0px;
 }
 
 .tab {

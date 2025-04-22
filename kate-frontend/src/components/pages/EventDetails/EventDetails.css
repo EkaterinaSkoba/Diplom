@@ -19,7 +19,7 @@
 .event-location,
 .event-budget,
 .event-note {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 .event-comment {
@@ -29,7 +29,6 @@
   max-width: 100%;
   display: inline-block;
   overflow: hidden;
-  resize: vertical;
   min-height: 20px;
   max-height: 200px;
 }
@@ -40,7 +39,7 @@
 }
 
 .event-status {
-  margin-top: 0.75rem;
+  margin-top: 0;
   display: flex;
   justify-content: flex-end;
 }

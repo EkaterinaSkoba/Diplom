@@ -1,0 +1,235 @@
+/* Стили для мобильной версии таблицы */
+.mobile-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Заголовки */
+.mobile-summary-table th {
+  text-align: left;
+  padding: 8px 4px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Ячейки */
+.mobile-summary-table td {
+  padding: 8px 4px;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+/* Информация об участнике */
+.participant-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.participant-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.participant-amounts {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #666;
+}
+
+.participant-amounts p {
+  margin: 0 0 2px 0;
+}
+
+/* Контейнер для суммы с кнопкой копирования */
+.amount-with-copy {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* В мобильной версии кнопка копирования отображается под суммой */
+.amount-with-copy.mobile {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.transfer-amount {
+  display: inline-block;
+}
+
+/* Кнопки с иконками */
+.transfer-actions.mobile {
+  display: flex;
+  gap: 5px;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Маленькая версия кнопки-иконки */
+.icon-button.small {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+}
+
+.icon-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Стили для иконки копирования */
+.copy-icon {
+    width: 19px;
+    height: 19px;
+    object-fit: contain;
+}
+
+/* Маленькая версия иконки для кнопки рядом с суммой */
+.icon-button.small .copy-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Стили для иконки Telegram */
+.telegram-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* Ширина столбцов */
+.mobile-summary-table th:nth-child(1),
+.mobile-summary-table td:nth-child(1) {
+  width: 30px;
+}
+
+.mobile-summary-table th:nth-child(3),
+.mobile-summary-table td:nth-child(3) {
+  width: 80px;
+}
+
+.mobile-summary-table th:nth-child(4),
+.mobile-summary-table td:nth-child(4) {
+  width: 70px;
+}
+
+/* Общие стили для мобильного режима */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: hidden;
+  }
+  
+  .summary-table table {
+    table-layout: fixed;
+  }
+}
+
+/* Стили для формы ввода реквизитов */
+.template-form-container {
+  width: 100%;
+  margin-top: -5px;
+  margin-bottom: 5px;
+}
+
+.template-form h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.textarea-container {
+    position: relative;
+    margin-bottom: 15px;
+  }
+  
+.textarea-container textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.textarea-container textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.payment-details-textarea {
+    min-width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    transition: border-color 0.2s ease;
+    resize: none;
+    box-sizing: border-box; /* Добавлено */
+    display: block; /* Гарантирует блочное отображение */
+}
+
+.payment-details-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.char-counter {
+  position: absolute;
+  right: 10px;
+  bottom: -20px;
+  font-size: 12px;
+  color: #666;
+}
+
+.save-button {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.save-button:hover {
+  background-color: #3fc40b;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .template-form {
+    padding: 12px;
+  }
+  
+  .template-form h3 {
+    font-size: 16px;
+  }
+  
+  .payment-details-input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .save-button {
+    width: 200px;
+    padding: 7px;
+  }
+} 

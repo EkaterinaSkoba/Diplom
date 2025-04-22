@@ -118,11 +118,11 @@ const PurchasesTab = (props: PurchasesProps) => {
   const getStatusText = (status: CompletionStatus): string => {
     switch (status) {
       case CompletionStatus.DONE:
-        return 'Выполнено';
+        return '✅ Выполнено';
       case CompletionStatus.IN_PROGRESS:
-        return 'В процессе';
+        return '🔄 В процессе';
       default:
-        return 'Не начато';
+        return '⏳ Не начато';
     }
   };
 
@@ -241,24 +241,43 @@ const PurchasesTab = (props: PurchasesProps) => {
             isMobileView ? (
                 <div className="purchases-mobile-view">
                   {purchases.map((purchase, index) => (
-                      <Paper key={purchase.id} className="purchase-card" elevation={3}>
-                        <Box p={2}>
-                          <Box display="flex" justifyContent="space-between" alignItems="center">
-                            <Box>
-                              <strong>{index + 1}. {purchase.name}</strong>
-                              <p>{getStatusText(purchase.completionStatus)}</p>
+                      <Paper key={purchase.id} className="purchase-card" elevation={3} >
+                        <Box p={0.5}>
+                          <Box display="flex" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap">
+                            <Box sx={{ 
+                              flex: '1 1 60%', // Минимум 60% ширины, 
+                              minWidth: 0, // Важно для обрезки текста
+                              overflow: 'hidden',
+                              pr: 1 // Отступ от кнопок
+                            }}>
+                              <strong style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                lineHeight: 1.3,
+                                wordBreak: 'break-word'
+                              }}>
+                                {index + 1}. {purchase.name}
+                              </strong>
+                              <p style={{ fontSize: '14px'}}>{getStatusText(purchase.completionStatus)}</p>
                             </Box>
-                            <Box>
-                              <Button size="small" onClick={(e) => handleEditPurchase(purchase.id, e)}>✎</Button>
-                              {!isUserContributor(purchase) && (
-                                  <Button size="small" onClick={(e) => handleAddToContributors(purchase.id, e)}>+</Button>
-                              )}
-                              <Button size="small" onClick={(e) => handleDeletePurchase(purchase.id)}>🗑️</Button>
+                            <Box sx={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'flex-end'
+                            }}>
+                              <Button sx={{ minWidth: '36px', fontSize: '14px' }} onClick={(e) => handleEditPurchase(purchase.id, e)}>✎</Button>
+                                {!isUserContributor(purchase) && (
+                                    <Button sx={{ minWidth: '36px', fontSize: '14px'}} onClick={(e) => handleAddToContributors(purchase.id, e)}>+</Button>
+                                )}
+                              <Button sx={{ minWidth: '36px', fontSize: '14px' }} onClick={(e) => handleDeletePurchase(purchase.id)}>🗑️</Button>
                             </Box>
                           </Box>
-                          <p>Стоимость: {purchase.price ? `${purchase.price} руб.` : '—'}</p>
-                          <p>Ответственный: {getParticipantNameById(purchase.responsibleId)}</p>
-                          <p>Кто скидывается: {getContributorsText(purchase.contributors)}</p>
+                          <p style={{ fontSize: '14px'}}>Стоимость: {purchase.price ? `${purchase.price} руб.` : '—'}</p>
+                          <p style={{ fontSize: '14px'}}>Ответственный: {getParticipantNameById(purchase.responsibleId)}</p>
+                          <p style={{ fontSize: '14px'}}>Кто скидывается: {getContributorsText(purchase.contributors)}</p>
                         </Box>
                       </Paper>
                   ))}

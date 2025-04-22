@@ -59,9 +59,30 @@ const MyContributionsTab = ({ participantId }) => {
             {contributions.map((contribution, index) => (
                 <tr key={contribution.id}>
                   <td className="contribution-name">
-                    <div>{index + 1}. {contribution.name}</div>
+                    <div 
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: 1.3,
+                      wordBreak: 'break-word'
+                    }}>
+                      {index + 1}. {contribution.name}</div>
                     {contribution.comment && (
-                        <div className="secondary-text">{contribution.comment}</div>
+                        <div 
+                        className="secondary-text"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          lineHeight: 1.2,
+                          wordBreak: 'break-word'
+                        }}
+                        >{contribution.comment}</div>
                     )}
                   </td>
                   <td>{contribution.price ? `${contribution.price} руб.` : '—'}</td>

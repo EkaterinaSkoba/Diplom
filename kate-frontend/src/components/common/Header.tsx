@@ -6,13 +6,21 @@ interface HeaderProps {
     title: string;
     showBackButton?: boolean;
     actionButton?: React.ReactNode;
+    customBackPath?: string;
+    onBackClick?: () => void;
 }
 
 const Header = (props: HeaderProps) => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate(-1);
+    if (props.onBackClick) {
+      props.onBackClick();
+    } else if (props.customBackPath) {
+      navigate(props.customBackPath);
+    } else {
+      navigate('/');
+    }
   };
 
   return (

@@ -93,9 +93,7 @@ const SummaryTab = (event: ParticipantItemProps) => {
 
   return (
     <div className="tab-container">
-      <div className="tab-header">
-        <h2>Итоги мероприятия</h2>
-      </div>
+      
 
       <MessageTemplateForm
           paymentDetails={paymentDetails}
