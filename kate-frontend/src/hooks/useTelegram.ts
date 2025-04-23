@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-// import {retrieveLaunchParams} from "@telegram-apps/sdk";
+import {retrieveLaunchParams} from "@telegram-apps/sdk";
 
 interface TelegramWebApp {
     ready: () => void;
@@ -34,9 +34,7 @@ export const useTelegram = () => {
 
     useEffect(() => {
         const initTelegram = () => {
-            try {
-                /* //ПОТОМ РАСКОММЕНТИРОВАТЬ
-                localStorage.clear();
+            try {localStorage.clear();
 
                 // Проверяем мок-режим
                 if (process.env.NODE_ENV === 'development' &&
@@ -47,14 +45,6 @@ export const useTelegram = () => {
                         first_name: 'Dev',
                         last_name: 'User'
                     };
-                */
-                // Всегда используем мок-режим для тестирования без Telegram. ПОТОМ УБРАТЬ
-                const mockUser = {
-                    id: 123456789,
-                    first_name: 'Dev',
-                    last_name: 'User'
-                };
-
                     const mockTg = {
                         ready: () => console.log('[MOCK] Telegram ready()'),
                         expand: () => console.log('[MOCK] Telegram expand()'),
@@ -69,9 +59,9 @@ export const useTelegram = () => {
                 window.Telegram = { WebApp: mockTg };
                 setIsLoading(false);
                 
-                // Остальной код закомментирован, т.к. мы всегда используем мок для тестирования в браузере
-                /*
                 
+                
+
                     return;
                 }
 
@@ -116,7 +106,7 @@ export const useTelegram = () => {
                         webApp.offEvent('webAppReady', handleReady);
                     }
                 };
-                */
+                
 
             } catch (e) {
                 console.error('Telegram init error:', e);

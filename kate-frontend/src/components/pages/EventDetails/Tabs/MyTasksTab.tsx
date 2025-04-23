@@ -148,7 +148,7 @@ const MyTasksTab = ({ event }) => {
       <div className="tab-container">
         <div className="tab-header">
           <h2>Задачи</h2>
-          <Select value={selectedParticipantId || ''} onChange={handleParticipantChange}>
+          <Select value={selectedParticipantId || ''}  onChange={handleParticipantChange}>
             {participants.map(participant => (
                 <MenuItem key={participant.id} value={participant.id}>
                   {participant.name || 'Без имени'}
@@ -215,41 +215,40 @@ const MyTasksTab = ({ event }) => {
                       <Select
                           value={task.completionStatus}
                           onChange={(e) => handleTaskStatusChange(task.id, e.target.value as CompletionStatus)}
+                          renderValue={(selected) => {
+                            if (selected === CompletionStatus.DONE) {
+                              return "✅";
+                            } else {
+                              return "🔄";
+                            }
+                          }}
                           sx={{
-
-                            // Стили для уменьшения высоты и текста
-                            height: '36px', // Стандартная высота ~48px
-                            fontSize: '14px', // Размер текста (по умолчанию 16px)
-
-                            // Общие стили для Select (рамка + фон + текст)
+                            height: '36px',
+                            fontSize: '14px',
                             backgroundColor: task.completionStatus === CompletionStatus.DONE ? "#e6f7d9" : "#f0ebff",
                             color: task.completionStatus === CompletionStatus.DONE ? "#71c017" : "#331bab",
                             "& .MuiOutlinedInput-notchedOutline": {
                               borderColor: task.completionStatus === CompletionStatus.DONE ? "#71c017" : "#331bab",
                             },
-                            // Стиль при наведении
                             "&:hover .MuiOutlinedInput-notchedOutline": {
                               borderColor: task.completionStatus === CompletionStatus.DONE ? "#5aa00e" : "#1a0a8a",
                             },
-                            // Уменьшаем внутренние отступы (padding)
                             "& .MuiSelect-select": {
-                              padding: '0px 0px 0px 10px', // Формат: верх право низ лево
+                              padding: '0px 0px 0px 10px',
                             },
                           }}
                         >
                           <MenuItem 
                             value={CompletionStatus.IN_PROGRESS}
-                            sx={{ color: "#331bab" }} // Цвет текста в выпадающем списке
                           >
-                            В процессе
+                            🔄 В процессе
                           </MenuItem>
                           <MenuItem 
                             value={CompletionStatus.DONE}
-                            sx={{ color: "#71c017" }} // Цвет текста в выпадающем списке
                           >
-                            Выполнено
+                            ✅ Выполнено
                           </MenuItem>
-                        </Select>
+                      </Select>
                       </td>
                     </tr>
                 ))}

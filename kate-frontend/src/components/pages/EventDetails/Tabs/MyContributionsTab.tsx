@@ -47,7 +47,7 @@ const MyContributionsTab = ({ participantId }) => {
             <p>У вас пока нет взносов</p>
           </div>
       ) : (
-        <div className="table-container my-contributions-table">
+        <div>
           <table>
             <thead>
               <tr>
@@ -85,14 +85,16 @@ const MyContributionsTab = ({ participantId }) => {
                         >{contribution.comment}</div>
                     )}
                   </td>
-                  <td>{contribution.price ? `${contribution.price} руб.` : '—'}</td>
+                  <td className="contribution-price">
+                    {contribution.price ? `${contribution.price}\u00A0₽` : '—'}
+                  </td>
                 </tr>
             ))}
             </tbody>
             <tfoot>
               <tr>
                 <td className="total-row" colSpan={2}>
-                  <strong>Итого:</strong> {totalAmount} руб.
+                  <strong>Итого:</strong> {totalAmount.toFixed(2)}&nbsp;руб.
                 </td>
               </tr>
             </tfoot>
