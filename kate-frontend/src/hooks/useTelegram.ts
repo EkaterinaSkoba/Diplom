@@ -31,98 +31,108 @@ declare global {
 export const useTelegram = () => {
     const [tg, setTg] = useState<TelegramWebApp | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         const initTelegram = () => {
-            try {localStorage.clear();
-
-                // Проверяем мок-режим
-                if (process.env.NODE_ENV === 'development' &&
-                    process.env.REACT_APP_ENABLE_TELEGRAM_MOCK === 'true') {
-
-                    const mockUser = {
-                        id: 123456789,
-                        first_name: 'Dev',
-                        last_name: 'User'
-                    };
-                    const mockTg = {
-                        ready: () => console.log('[MOCK] Telegram ready()'),
-                        expand: () => console.log('[MOCK] Telegram expand()'),
-                        initDataUnsafe: {
-                            user: mockUser,
-                            auth_date: Math.floor(Date.now() / 1000),
-                            hash: 'mock-hash'
-                        }
-                    };
-
-                setTg(mockTg);
-                window.Telegram = { WebApp: mockTg };
-                setIsLoading(false);
+            try {
+                // 1. Проверяем, находимся ли мы в Telegram WebView
+                const isTelegramWebView = window.Telegram && window.Telegram.WebApp;
                 
-                
-                
+                // // 2. Режим разработки с мок-данными
+                // if (process.env.NODE_ENV === 'development' && 
+                //     process.env.REACT_APP_ENABLE_TELEGRAM_MOCK === 'true') {
+                    
+                //     const mockUser = {
+                //         id: 123456789,
+                //         first_name: 'Dev',
+                //         last_name: 'User'
+                //     };
+                    
+                //     const mockTg = {
+                //         ready: () => console.log('[MOCK] Telegram ready()'),
+                //         expand: () => console.log('[MOCK] Telegram expand()'),
+                //         initDataUnsafe: {
+                //             user: mockUser,
+                //             auth_date: Math.floor(Date.now() / 1000),
+                //             hash: 'mock-hash'
+                //         }
+                //     };
 
+                //     setTg(mockTg);
+                //     setIsLoading(false);
+                //     return;
+                // }
+
+                // 3. Реальный режим работы в Telegram
+                if (!isTelegramWebView) {
+                    setError(new Error('Telegram WebApp not detected'));
+                    setIsLoading(false);
                     return;
                 }
 
-                const webApp = window?.Telegram?.WebApp;
+                const webApp = window.Telegram.WebApp;
 
-                // Обработка события готовности
                 const handleReady = () => {
-                    console.log('Telegram WebApp is ready');
-                    setTg({
-                        ready: () => {},
-                        expand: () => {},
-                        initDataUnsafe: {
-                            user: {
-                                id: retrieveLaunchParams().tgWebAppData.user.id,
-                                first_name: retrieveLaunchParams().tgWebAppData.user.first_name,
-                                last_name: retrieveLaunchParams().tgWebAppData.user.last_name,
-                                username: retrieveLaunchParams().tgWebAppData.user.username,
-                                photo_url: retrieveLaunchParams().tgWebAppData.user.photo_url
-                            },
-                            auth_date: retrieveLaunchParams().tgWebAppData.auth_date.getDate(),
-                            hash: retrieveLaunchParams().tgWebAppData.hash
-                        }
-                    });
-                    setIsLoading(false);
-
-                    // Раскрываем WebApp на весь экран
-                    webApp?.expand();
+                    try {
+                        webApp.expand(); // Раскрываем на весь экран
+                        
+                        setTg({
+                            ...webApp,
+                            initDataUnsafe: {
+                                user: webApp.initDataUnsafe?.user,
+                                auth_date: webApp.initDataUnsafe?.auth_date,
+                                hash: webApp.initDataUnsafe?.hash
+                            }
+                        });
+                        
+                        setIsLoading(false);
+                    } catch (e) {
+                        setError(e as Error);
+                        setIsLoading(false);
+                    }
                 };
 
-                // Проверяем, доступен ли onEvent
-                if (webApp?.onEvent) {
-                    webApp?.onEvent('webAppReady', handleReady);
+                // Разные стратегии инициализации для разных версий WebApp
+                if (webApp.onEvent) {
+                    webApp.onEvent('webAppReady', handleReady);
+                    webApp.ready();
                 } else {
-                    // Если onEvent недоступен, используем ready()
-                    webApp?.ready();
+                    webApp.ready();
                     handleReady();
                 }
 
-                // Возвращаем функцию очистки
                 return () => {
                     if (webApp.offEvent) {
                         webApp.offEvent('webAppReady', handleReady);
                     }
                 };
-                
 
             } catch (e) {
-                console.error('Telegram init error:', e);
+                setError(e as Error);
                 setIsLoading(false);
             }
         };
 
-        // Добавляем небольшую задержку для гарантии загрузки Telegram WebApp
-        const timer = setTimeout(initTelegram, 100);
-
-        return () => clearTimeout(timer);
+        // Более надёжная проверка загрузки Telegram SDK
+        if (window.Telegram) {
+            initTelegram();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.Telegram) {
+                    clearInterval(checkInterval);
+                    initTelegram();
+                }
+            }, 50);
+            
+            return () => clearInterval(checkInterval);
+        }
     }, []);
 
     return {
         tg,
         isLoading,
+        error,
         user: tg?.initDataUnsafe?.user,
         userId: tg?.initDataUnsafe?.user?.id
     };

@@ -92,7 +92,7 @@ const ParticipantsTab = ({event}: ParticipantItemProps) => {
             <TableBody>
               {participants.map((participant, index) => (
                   <TableRow key={participant.id}>
-                    <TableCell>{index + 1}. {participant.name}</TableCell>
+                    <TableCell>{index + 1}. {participant.tgUserId === user.id ? 'Я' : (participant.name || 'Без имени')}</TableCell>
                     <TableCell>{participant.tgUserId === event.organizerTgUserId ? 'Организатор' : 'Участник'}</TableCell>
                     {isCurrentUserOrganizer() && participant.tgUserId !== user.id && (
                         <TableCell>

@@ -149,9 +149,15 @@ const AddPurchase = () => {
     /**
      * Проверка того, что ответственный введён
      */
-    if (!formData?.responsibleId) {
-      alert("Выберите ответственного!");
-      return;
+    if (!formData.responsibleId) {
+      // Если ответственный не выбран, пытаемся установить текущего пользователя
+      if (currentUserAsParticipant) {
+        setFormData(prev => ({ ...prev, responsibleId: currentUserAsParticipant.id }));
+        return; // Даем пользователю возможность проверить изменения
+      } else {
+        alert("Не удалось определить ответственного. Пожалуйста, выберите вручную.");
+        return;
+      }
     }
 
     const purchaseData: Procurement = {
@@ -194,6 +200,7 @@ const AddPurchase = () => {
             type="text"
             id="name"
             name="name"
+            maxLength={50}
             value={formData?.name}
             onChange={handleChange}
             required
@@ -216,16 +223,20 @@ const AddPurchase = () => {
         <div className="form-group">
           <label htmlFor="responsibleId">Ответственный</label>
           <Select
-              id="responsibleId"
-              name="responsibleId"
-              value={formData?.responsibleId}
-              onChange={handleChange}
-              input={<OutlinedInput label="Ответственный" />}
+            id="responsibleId"
+            name="responsibleId"
+            value={formData.responsibleId || currentUserAsParticipant?.id || ''}
+            onChange={handleChange}
+            input={<OutlinedInput label="Ответственный" />}
           >
             {participants.map(participant => (
-                <MenuItem key={participant.id} value={participant.id}>
-                  {participant.name}
-                </MenuItem>
+              <MenuItem 
+                key={participant.id} 
+                value={participant.id}
+                selected={participant.id === currentUserAsParticipant?.id}
+              >
+                {participant.name}
+              </MenuItem>
             ))}
           </Select>
         </div>
@@ -233,39 +244,34 @@ const AddPurchase = () => {
         <div className="form-group">
           <label htmlFor="contributors">Кто скидывается</label>
           <Select
-              id="contributors"
-              name="contributors"
-              value={formData?.contributors || []}
-              onChange={handleChange}
-              input={<OutlinedInput label="Кто скидывается" />}
-              multiple
-              renderValue={(selected) => {
-                if (!selected || selected.length === 0) {
-                  return <span>Все</span>; // Возвращаем React-элемент вместо строки
-                }
-                return (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                          <Chip
-                              key={value}
-                              label={getParticipantNameById(value)}
-                          />
-                      ))}
-                    </Box>
-                );
-              }}
+            id="contributors"
+            name="contributors"
+            value={formData.contributors || []}
+            onChange={handleChange}
+            input={<OutlinedInput label="Кто скидывается" />}
+            multiple
+            displayEmpty
+            renderValue={(selected) => {
+              if (!selected || selected.length === 0 ) {
+                return <span>Все</span>;
+              }
+              return (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={getParticipantNameById(value)}
+                    />
+                  ))}
+                </Box>
+              );
+            }}
           >
-            {currentUserAsParticipant &&
-              <MenuItem key={currentUserAsParticipant.id} value={currentUserAsParticipant.id}> {currentUserAsParticipant.name} </MenuItem>
-            }
-
-            {
-              participants.filter(p => p.id !== currentUserAsParticipant.id).map(participant => (
+            {participants.map(participant => (
               <MenuItem key={participant.id} value={participant.id}>
-                {`${participant.name}`}
-              </MenuItem >
-              ))
-            }
+                {participant.name}
+              </MenuItem>
+            ))}
           </Select>
         </div>
 
@@ -297,13 +303,13 @@ const AddPurchase = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="comment">Примечание ({formData?.comment?.length || 0}/200)</label>
+          <label htmlFor="comment">Примечание ({formData?.comment?.length || 0}/100)</label>
           <textarea
             id="comment"
             name="comment"
             value={formData?.comment}
             onChange={handleChange}
-            maxLength={200}
+            maxLength={100}
             placeholder="Дополнительная информация"
             rows={3}
           ></textarea>

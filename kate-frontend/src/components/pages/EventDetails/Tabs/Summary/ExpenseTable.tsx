@@ -3,6 +3,8 @@ import {
     sendNotificationToParticipant,
     sendNotificationToUser
 } from "../../../../../api/endpoints/notificationEndpoints";
+import { useTelegramAuth } from "../../../../../context/TelegramAuthContext";
+import EventEntity from "../../../../../model/EventEntity";
 import IconTelegram from './IconTelegram.svg';
 import IconCopy from './IconCopy.svg';
 import './SummaryTab.css';
@@ -10,6 +12,8 @@ import './SummaryTab.css';
 const ExpenseTable = ({ participantSummary, onPaymentStatusChange, currentParticipantId }) => {
     // Выбор режима отображения в зависимости от ширины экрана (для мобильного вида)
     const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+
+    const {user} = useTelegramAuth();
 
     // Обновляем состояние при изменении размера окна
     useEffect(() => {
@@ -77,7 +81,7 @@ const ExpenseTable = ({ participantSummary, onPaymentStatusChange, currentPartic
                                     </td>
                                     <td>
                                         <div className="participant-info">
-                                            <div className="participant-name">{participant.name || 'Неизвестный'}</div>
+                                            <div className="participant-name">{participant.tgUserId === user.id ? 'Я' : (participant.name || 'Без имени')}</div>
                                             <div className="participant-amounts">
                                                 <p>Потрачено: {(participant.spentAmount || 0).toFixed(2)}&nbsp;₽</p>
                                                 <p>Доля: {(participant.owedAmount || 0).toFixed(2)}&nbsp;₽</p>
@@ -146,7 +150,7 @@ const ExpenseTable = ({ participantSummary, onPaymentStatusChange, currentPartic
                                     onChange={(e) => onPaymentStatusChange(participant.participantId, e.target.checked)}
                                 />
                             </td>
-                            <td>{participant.name || 'Неизвестный'}</td>
+                            <td> {participant.tgUserId === user.id ? 'Я' : (participant.name || 'Без имени')}</td>
                             <td>{(participant.spentAmount || 0).toFixed(2)}&nbsp;руб.</td>
                             <td>{(participant.owedAmount || 0).toFixed(2)}&nbsp;руб.</td>
                             <td>
@@ -179,5 +183,4 @@ const ExpenseTable = ({ participantSummary, onPaymentStatusChange, currentPartic
         </div>
     );
 };
-
 export default ExpenseTable;

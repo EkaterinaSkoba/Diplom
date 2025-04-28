@@ -151,7 +151,7 @@ const MyTasksTab = ({ event }) => {
           <Select value={selectedParticipantId || ''}  onChange={handleParticipantChange}>
             {participants.map(participant => (
                 <MenuItem key={participant.id} value={participant.id}>
-                  {participant.name || 'Без имени'}
+                  {participant.tgUserId === user.id ? 'Я' : (participant.name || 'Без имени')}
                 </MenuItem>
             ))}
           </Select>
