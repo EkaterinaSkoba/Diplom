@@ -79,30 +79,43 @@ const PurchasesTab = (props: PurchasesProps) => {
     e.stopPropagation();
     const purchase = await getProcurementById(purchaseId);
     if (!purchase) return;
-
+  
+    const eventParticipants = (await getEventParticipants(eventId)) as Participant[];
+    const participant = eventParticipants.find(e => e.tgUserId === user.id);
+    
+    if (!participant) return; // Если участник не найден, выходим
+  
     let newContributors = [];
-
-    // Если contributors - массив, добавляем текущего пользователя
+  
+    // Если contributors - массив, добавляем текущего участника
     if (Array.isArray(purchase.contributors)) {
-      newContributors = [...purchase.contributors, 'currentUser'];
+      // Проверяем, не добавлен ли уже участник
+      if (!purchase.contributors.includes(participant.id)) {
+        newContributors = [...purchase.contributors, participant.id];
+      } else {
+        return; // Уже добавлен, ничего не делаем
+      }
     } 
     // Если contributors - строка 'all', оставляем как есть
-    else if (purchase.contributors === 'all') {
+    else if (purchase.contributors === '') {
       return;
     } 
-    // Иначе создаем массив с текущим пользователем
+    // Иначе создаем массив с текущим участником
     else {
-      newContributors = ['currentUser'];
+      newContributors = [participant.id];
     }
-
-    const eventParticipants = (await getEventParticipants(eventId));
-    const participant = (eventParticipants as Participant[]).find(e => e.tgUserId === user.id);
-    await updateProcurement(eventId, purchaseId, purchase, participant.id);
+  
+    // Обновляем закупку на сервере
+    const updatedPurchase = {
+      ...purchase,
+      contributors: newContributors
+    };
     
+    await updateProcurement(eventId, purchaseId, updatedPurchase, participant.id);
     // Обновление состояния в UI
     setPurchases(prevPurchases => 
       prevPurchases.map(p => 
-        p.id === purchaseId ? { ...p, contributors: newContributors } : p
+        p.id === purchaseId ? updatedPurchase : p
       )
     );
   };
